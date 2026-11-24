@@ -1,0 +1,27 @@
+; Hello guys. I wanted to show you my CPU! whats the best way for it? right the lovly Hello World Program, so lets get into it!
+
+.arch 8 ; we use the 8 bit architecture for that example. Remember The 8 Bit Architecture caps us on only 256 addressable Memory Cells
+.buf text "Hello World" ?200 ; we write Hello World in Memory, starting at postion 200. That way we have 56 Cells room for our text. way enough
+
+_start:
+    mov &15, 11 ; we want our GPU rendering 11 pixel in x axis    Remember &15-&18 are Callee Argument Register
+    mov &16, 2 ; and 2 pixels in y axis
+    syscall gpuint ; we initialize our GPU with that buffer
+    mov &23, 0 ; that will be our counter. we need to check how many characters we already printed
+    mov &24, text_len ; we save our len of the buffer in &24. The assembler generates for buffers a _len variable you can or must use
+    mov &25, text ; we put our pointer of the first index in memory value herer. additionally we could directly write mov &25, 200
+    mov &15, 0 ; our x axis register
+    mov &16, 1 ; our y axis register. we want it on 1
+    mov &17, 7 ; hmm a color, what could it may be? thats our color register
+    rem hello_world ; this is our jmp entry. we jmp here over and over again because we need to loop every character into the gpu framebuffer
+    je &23, &24, _exit ; when our counter is equal to the len of the text we jump to our _exit function
+    mov &18, %&25 ; we use % & to access the memory value at the position of the pointer we increment
+    syscall gpuchr ; we add the character to our 10x2 framebuffer
+    inc &23 ; we increment our counter so we can check counter == text_len when we printed all characters
+    inc &25 ; we add 1 to our pointer so it goes to the next character
+    inc &15 ; we also increment our x axis every loop so every character gets written once onto every x pos
+    jmp hello_world
+
+_exit:
+    syscall gpudis ; we finally display our framebuffer
+    exit 0 ; and then end the cpu cycle

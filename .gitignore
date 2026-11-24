@@ -1,0 +1,11 @@
+/.venv
+__pycache__/
+*.pyc
+corpus.py
+*.lst
+*.pc
+*.obj
+punchcards/tests
+/programming/out
+/out
+/.idea

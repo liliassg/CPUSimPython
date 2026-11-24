@@ -1,0 +1,62 @@
+.arch 32
+.data [gpu_data: 4000, pixelx: 15, pixely: 16, color: 17, text: 18, ram_parameters: gpu_data+255, ptr_reg: 47]
+
+_start:
+
+    ret
+
+_gpu_create_framebuffer:
+    syscall gpuint
+
+_gpu_draw:
+    syscall gpupix ; tell the gpu to draw
+    ; uses &15, &16 to determinate the pixel pos
+    ; uses &17 to determinate color
+    ret
+
+_gpu_display:
+    syscall gpudis
+    ret
+
+_gpu_draw_line_x:
+;; **&23**: line length - **&24**: start x - **&25**: start y - **&26** col;;
+    ; init ;
+    mov %ram_parameters+1, 0 ; how many pixels where drawn
+    mov &pixely, &25             ; y dont change, write it into &25
+    mov %ram_parameters+2, &24
+    mov &color, &26 ; set color
+    ; init end ;
+    rem _draw_line_x_start
+    jne %ram_parameters+1, &23, +2
+    ret
+    mov &pixelx, %ram_parameters+2 ; write the current x that needs to be drawn
+    call _gpu_draw
+    inc %ram_parameters+1
+    inc %ram_parameters+2
+    jmp _draw_line_x_start
+
+_gpu_write_text_x:
+;; **&23** text length - **&24** text pointer - **&25** start x - **&26** styrt y ;;
+    ; init ;
+    mov %ram_parameters+1, 0 ; read counter
+    mov &ptr_reg, &24 ; point to the start of the text buf
+    mov &pixely, &26 ; y dont change
+    mov &pixelx, &25 ; x start pos
+    ; init end ;
+    rem _write_text_x_start
+    jne %ram_parameters+1, &23, +2
+    ret
+    mov &text, %&ptr_reg
+    syscall gpuchr
+    inc &ptr_reg
+    inc %ram_parameters+1
+    inc &pixelx
+    jmp _write_text_x_start
+
+_clear:
+    syscall gpucls
+    ret
+
+
+; =========== Helpers ============
+

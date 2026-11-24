@@ -1,0 +1,27 @@
+; CASM Runtime file
+.arch 8
+_start:
+
+    ; init
+
+    ; start runtime loop
+    jmp _runtime
+
+_tasks:
+    ;syscall 122 ; read file extern.pc. this syscall reads the file and loads it into sram. writes its start:end (ip) into &19, &20
+    mov %0, &19
+    ;syscall 4 ; write ip into &19
+    mov &26, &19
+    push 3
+
+
+
+_runtime:
+
+    ; do runtime stuff
+    call _tasks
+
+    ; loop
+    jmp _runtime
+    
+       

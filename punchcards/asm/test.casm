@@ -1,0 +1,20 @@
+.arch 32
+.extern "rt/gpu.casm"
+.buf ciao "Ciao"
+
+_start:
+    mov &23, ciao_len
+    mov &24, ciao
+    mov &0, max_x
+    div &0, 2
+    mov &25, &0
+    mov &0, max_y
+    div &0, 2
+    mov &26, &0
+    call _write_text_x
+    jmp _end
+
+_end:
+    call _display
+    exit 0
+

@@ -1,0 +1,5 @@
+.arch 32
+
+_start:
+
+    ret

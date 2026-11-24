@@ -1,0 +1,7 @@
+.arch 32
+_start:
+    ret
+
+_kb_get:
+    syscall key
+    ret

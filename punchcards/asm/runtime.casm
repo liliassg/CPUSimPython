@@ -1,0 +1,49 @@
+.arch 32
+.extern "rt/gpu.casm"
+.extern "rt/games.casm"
+.data [rt_data: 1000, error_register: 40, cap_register: 39]
+.buf runtime_header_ "CASM RUNTIME v0.1"
+.buf author_name_ "made by Lilias Hatterscheidt"
+; &40 is the global error reg 0=ok, 1=error
+_start:
+    call _r_draw_header
+    call _r_draw_bottom
+    call _clear
+    call _display
+    jmp _r_loop
+
+_r_loop:
+    jne &error_register, 1, +2
+    exit &error_register ; hlt cpu if &40==1. &40 is the error reg
+    ; additional runtime code here
+    inc &cap_register
+    jmp _r_loop
+
+
+; ########## Helper ###############
+
+_r_draw_header:
+    mov &24, 0 ; line start pos x
+    mov &25, 0 ; line start pos y
+    mov &23, max_x ; draw line 100 pixel long in x axis
+    call _draw_line_x
+    mov &25, 0
+    mov &26, 1
+    mov &23, runtime_header__len
+    mov &24, runtime_header_
+    call _write_text_x
+    mov &25, 5
+    mov &26, 2
+    mov &23, author_name__len
+    mov &24, author_name_
+    call _write_text_x
+    ret
+_r_draw_bottom:
+    mov &24, 0 ; line start pos x
+    mov &25, max_y-1 ; line start pos y, the last row is max_y-1
+    mov &23, max_x ; draw line 100 pixel long in x axis
+    call _draw_line_x
+    ret
+_r_error:
+    mov &error_register, 1
+    ret
