@@ -3,16 +3,21 @@ import random
 
 class Builtins:
     def __init__(self):
-        self.builtins_path = "programming/builtins/"
         self.file_ending = ".descr"
         self.symbols = {}
+
+    def beside_me(self, file: str):
+        here = os.path.dirname(os.path.abspath(__file__))
+        return os.path.join(here, os.path.basename(file))
 
     def collect_symbols(self, filename: str):
         """collect symbols for a file like gpu.casm"""
         file = filename.split(".")[0] + self.file_ending
         lines = []
         if not os.path.exists(file):
-            raise FileNotFoundError(f"{filename} doesnt exist on that path")
+            file = self.beside_me(file)
+        if not os.path.exists(file):
+            raise FileNotFoundError("provided files doesnt exist on that path")
         with open(file, "r") as data:
             raw_lines = data.readlines()
             for l in raw_lines:
@@ -35,7 +40,8 @@ class Builtins:
                 continue
             self.parse_expression(line, statement, parsed)
             continue
-        self.symbols[filename.split(".")[0]] = parsed
+        basenamefile = file.split("\\")[-1].split(".")[0]
+        self.symbols[basenamefile] = parsed
         return True
 
     def get_modules(self):
