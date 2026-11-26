@@ -49,7 +49,10 @@ class Byte:
 
     
     def bitstring(self, x, bit_length: int = None, endian: str = None):
-        """make a bitsring from an int/list/bytes object"""
+        """
+        make a bitsring from an int/list/bytes object
+        can also convert negative numbers into the right two complement bitstring and reversed
+        """
         if bit_length is None:
             bit_length = self.BITLENGTH
         if endian is None:
@@ -98,6 +101,12 @@ class Byte:
             return byte[::-1] + "b"
         return byte + "b"
 
+    def two_complement(self, bitstring: str):
+        """return the two complement (zweierkomplement) from a bitstring"""
+        return self.bitstring(-1*self.convert(bitstring))
+
+
+
 
     def flipendian(self, bitstring: str):
         return bitstring[::-1]
@@ -134,4 +143,10 @@ class Byte32(Byte):
         super().__init__()
         self.BITLENGTH = 32
         self.BYTELENGTH = 4
+
+
+if __name__ == "__main__":
+    byte = Byte8()
+    testval = byte.convert(3)
+    print(byte.convert(byte.two_complement(testval)))
         

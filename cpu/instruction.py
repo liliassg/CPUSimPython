@@ -229,6 +229,7 @@ class Instruction:
             9: "adr", # address mode
             10: "buf", # buffer mode
             11: "ptr", # pointer mode
+            12: "sgn", # sign mode
 
         }
         self.syscalls = {

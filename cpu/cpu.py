@@ -446,7 +446,10 @@ class CPU:
         got_buf = False
         got_ptr = False
         buf_counter = -1
+        got_sgn = False
+        is_signed = False
         for instr in instruction:
+            # sign check. that would destroy immediate value, needs to be before instr ig like sgn imm 3 imo 2 reg 3 fin
             if mode == 1:
                 mode = 0
                 if target == 0:
@@ -456,7 +459,7 @@ class CPU:
                     self.instruction.reg.IRE = instr
                     continue
                 elif target == 2:
-                    self.instruction.reg.IIM = instr
+                    self.instruction.reg.IIM = instr if not is_signed else self.byte.two_complement(instr)
                     continue
                 elif target == 3:
                     self.instruction.reg.SYS = instr
@@ -596,6 +599,14 @@ class CPU:
                         return False
                     got_ptr = True
                     self.instruction.reg.SIGNAL_PTR = True
+                # 12: signed mode
+                elif self.instruction.instruction(instr, True) == "sgn":
+                    if got_sgn:
+                        self.FETCH_ERROR = True
+                        self.ERROR_HINT = "cpu sgn error: invalid instruction sequence"
+                        return False
+                    got_sgn = True
+                    is_signed = True
                 else:
                     self.FETCH_ERROR = True
                     self.ERROR_HINT = f"cpu instruction fetch error: unknown instruction sequence"

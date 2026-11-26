@@ -430,9 +430,9 @@ class Assembler:
             if value is None:
                 self.error(line, f"cannot fold {piece} in a block")
                 return None
-            if value < 0:
-                self.error(line, f"{piece} is negative, and a word cannot be")
-                return None
+            #if value < 0:  cpu does now support sgn tags
+           #     self.error(line, f"{piece} is negative, and a word cannot be")
+           #     return None
             words.append(value)
         return words
 
