@@ -20,6 +20,13 @@ write:
 2=&26
 call=_gpu_write_text_x
 
+writechr:
+0=&15
+1=&16
+2=&17
+3=&18
+call=_gpu_write_char_x
+
 clear:
 call=_gpu_cls
 

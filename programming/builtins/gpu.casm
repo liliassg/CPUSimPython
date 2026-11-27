@@ -7,6 +7,7 @@ _start:
 
 _gpu_create_framebuffer:
     syscall gpuint
+    ret
 
 _gpu_draw:
     syscall gpupix ; tell the gpu to draw
@@ -52,6 +53,11 @@ _gpu_write_text_x:
     inc %ram_parameters+1
     inc &pixelx
     jmp _write_text_x_start
+
+_gpu_write_char_x:
+;;  [&15=x, &16=y, &17=col, &18=char] ;;
+    syscall gpuchr
+    ret
 
 _clear:
     syscall gpucls

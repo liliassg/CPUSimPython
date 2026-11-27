@@ -1,0 +1,78 @@
+.arch 32
+.data [
+malloc_data: 1500,
+malloc_start: 2000,
+malloc_ptr: 47,
+malloc_len: 46
+]
+_start:
+    mov &malloc_len, 1
+
+_malloc:
+;; allocate memory with the malloc tool
+   takes: &15 -> data
+   returns: &19 -> allocation index
+;;
+    mov &malloc_ptr, malloc_start
+    add &malloc_ptr, &malloc_len
+    mov %&malloc_ptr, &15
+    inc &malloc_len
+    mov &19, &malloc_len
+    ret
+
+_malloc_get:
+;; get data from memory with the malloc tool
+   takes: &15 -> allocation index
+   returns: &19 -> data
+;;
+    jge &15, &malloc_len, _malloc_report_error
+    mov &malloc_ptr, malloc_start
+    add &malloc_ptr, &15
+    mov &19, %&malloc_ptr
+    ret
+_malloc_buffer:
+;; allocate buffer with the malloc tool
+   takes: &15 -> buffer len
+   takes: &16 -> buffer ptr
+   returns: &19 -> last allocation index
+;;
+    mov %malloc_data+0, 0
+    mov &malloc_ptr, malloc_start
+    add &malloc_ptr, &malloc_len
+    mov &malloc_ptr-1, &16
+    rem _malloc_buffer_recr
+    jne %malloc_data+0, &15, +3
+    mov &19, &malloc_len
+    ret
+    inc %malloc_data+0
+    mov %&malloc_ptr, &malloc_ptr-1
+    inc &malloc_ptr-1
+    inc &malloc_ptr
+    inc &malloc_len
+    jmp _malloc_buffer_recr
+_malloc_buffer_get:
+;; get buffer memory with the malloc tool
+   takes: &15 -> allocation index (last)
+   takes: &16 -> len
+   takes: &17 -> index of buffer you want to get
+   returns: &19 -> data
+;;
+    mov &malloc_ptr, malloc_start
+    add &malloc_ptr, &15
+    sub &malloc_ptr, &16
+    mov %malloc_data+0, 0
+    jgt &17, &16, _malloc_report_error
+    jgt &15, &malloc_len, _malloc_report_error
+    rem _malloc_buffer_get_recr
+    je %malloc_data+0, &17, +3
+    mov &19, %&malloc_ptr
+    ret
+    inc &malloc_ptr
+    jmp _malloc_buffer_get_recr
+
+_malloc_report_error:
+    mov &48, 1
+    ret
+
+
+

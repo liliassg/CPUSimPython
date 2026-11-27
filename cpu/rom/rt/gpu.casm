@@ -1,5 +1,15 @@
 .arch 32
-.data [gpu_data: 4000, pixelx: 15, pixely: 16, color: 17, text: 18, ram_parameters: gpu_data+255, max_x: 99, max_y: 31, ptr_reg: 47]
+.data [
+gpu_data: 5000,
+pixelx: 15,
+pixely: 16,
+color: 17,
+text: 18,
+ram_parameters: gpu_data+255,
+max_x: 99,
+max_y: 31,
+ptr_reg: 47
+]
 
 _start:
     ; init a 100x100 Frame buffer
@@ -54,6 +64,9 @@ _write_text_x:
     inc %ram_parameters+1
     inc &pixelx
     jmp _write_text_x_start
+
+_gpu_write_char_x:
+    syscall gpuchr
 
 _clear:
     syscall gpucls
